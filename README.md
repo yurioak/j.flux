@@ -26,6 +26,9 @@ A SFP passa a ser composta por:
 - `docs/architecture.md`: arquitetura do runner, catalogo de fluxos e storage
 - `docs/mvp-roadmap.md`: MVP, backlog e evolucao do produto
 - `docs/flow-package-spec.md`: especificacao de pacotes de fluxo compartilhaveis
+- `docs/operational-memory.md`: memoria operacional e decisoes que nao devem ficar apenas em conversa
+- `docs/playwright-flow-authoring.md`: padrao para criar novos fluxos com Playwright
+- `CONTRIBUTING.md`: regras de contribuicao e continuidade operacional
 - `config/settings.example.json`: configuracao base do programa
 - `config/settings.base.json`: configuracao institucional compartilhada
 - `config/users/*.json`: perfis individuais de usuario
