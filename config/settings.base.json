@@ -1,0 +1,41 @@
+{
+  "appName": "SEI Flow Platform",
+  "locale": "pt-BR",
+  "storage": {
+    "rootDir": "./storage/users",
+    "logsDirName": "logs",
+    "screenshotsDirName": "screenshots",
+    "outputsDirName": "outputs",
+    "exportsDirName": "exports",
+    "templatesDirName": "templates",
+    "browserProfilesDirName": "browser-profile"
+  },
+  "flows": {
+    "directory": "./flows",
+    "allowFolderImport": true,
+    "allowZipImport": true,
+    "allowFlowExport": true
+  },
+  "browser": {
+    "engine": "edge",
+    "headless": false,
+    "channel": "msedge",
+    "executablePath": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+    "slowMo": 0,
+    "persistentSession": true
+  },
+  "sei": {
+    "baseUrl": "https://sei.trf1.jus.br/sip/login.php?sigla_orgao_sistema=TRF1&sigla_sistema=SEI",
+    "navigationTimeoutMs": 30000
+  },
+  "audit": {
+    "saveLogs": true,
+    "saveScreenshots": true,
+    "saveOutputs": true
+  },
+  "ux": {
+    "showUserBanner": true,
+    "showActiveUnit": true,
+    "showRecentRuns": true
+  }
+}

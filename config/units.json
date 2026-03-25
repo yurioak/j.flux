@@ -1,0 +1,15 @@
+{
+  "defaultUnit": "Secretaria Geral",
+  "units": [
+    {
+      "id": "gabinete",
+      "name": "Gabinete",
+      "allowedFlows": ["consultar-processo", "gerar-despacho"]
+    },
+    {
+      "id": "protocolo",
+      "name": "Protocolo",
+      "allowedFlows": ["consultar-processo", "baixar-documento", "anexar-documento"]
+    }
+  ]
+}

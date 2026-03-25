@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEI Flow Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">SEI Flow Platform</p>
+          <h1>Operacao local</h1>
+          <p class="topbar__text">
+            Executar fluxos reais, acompanhar progresso e confirmar etapas manuais
+            sem depender do terminal.
+          </p>
+        </div>
+        <div class="topbar__status">
+          <div class="status-chip" id="connection-badge">Conectando</div>
+          <div class="status-chip status-chip--subtle" id="selected-user-badge">Usuario</div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel--form">
+          <div class="panel__header">
+            <div>
+              <p class="panel__eyebrow">Nova execucao</p>
+              <h2>Executar fluxo</h2>
+              <p class="panel__subtext">
+                Preencha apenas os dados necessarios. Quando houver login manual, a
+                confirmacao aparece no painel ao lado.
+              </p>
+            </div>
+          </div>
+
+          <div class="inline-message hidden" id="feedback-banner" role="status"></div>
+
+          <div class="comfort-card" id="comfort-card">
+            <strong id="comfort-title">Tudo pronto para começar</strong>
+            <p id="comfort-text">
+              Escolha o fluxo, preencha os campos e clique em executar. Eu vou te
+              mostrar cada etapa para que voce saiba exatamente o que esta acontecendo.
+            </p>
+          </div>
+
+          <form id="flow-form" novalidate>
+            <section class="form-section">
+              <div class="form-section__header">
+                <strong>Contexto</strong>
+                <span>Quem vai executar</span>
+              </div>
+
+              <label for="user-id">Usuario</label>
+              <select id="user-id" name="user-id"></select>
+
+              <label for="flow-type">Fluxo</label>
+              <select id="flow-type" name="flow-type"></select>
+            </section>
+
+            <section class="form-section">
+              <div class="form-section__header">
+                <strong>Dados do fluxo</strong>
+                <span>Campos variam conforme o tipo de execucao</span>
+              </div>
+
+              <div class="dynamic-fields" id="dynamic-fields"></div>
+            </section>
+
+            <div class="summary-card">
+              <div class="summary-card__header">
+                <strong id="preview-type">Fluxo</strong>
+                <span class="status-chip status-chip--subtle">Resumo</span>
+              </div>
+              <p id="preview-body"></p>
+            </div>
+
+            <div class="callout">
+              <strong class="callout__title">Antes de executar</strong>
+              <p id="run-notice"></p>
+            </div>
+
+            <button class="button button--primary button--full" id="submit-button" type="submit">
+              Executar agora
+            </button>
+          </form>
+
+          <section class="library-panel">
+            <div class="panel__header">
+              <div>
+                <p class="panel__eyebrow">Biblioteca</p>
+                <h2>Fluxos</h2>
+                <p class="panel__subtext">
+                  Veja o que ja esta disponivel e o que ainda esta em desenvolvimento.
+                </p>
+              </div>
+            </div>
+
+            <div class="library-group">
+              <div class="library-group__title">Disponiveis agora</div>
+              <div class="library-list" id="library-available"></div>
+            </div>
+
+            <div class="library-group">
+              <div class="library-group__title">Em desenvolvimento</div>
+              <div class="library-list" id="library-developing"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="panel panel--main">
+          <div class="stage-banner hidden" id="stage-banner">
+            <div class="stage-banner__content">
+              <strong id="stage-banner-title">Execucao em andamento</strong>
+              <p id="stage-banner-text"></p>
+            </div>
+            <button class="button button--warning hidden" id="stage-banner-button" type="button">
+              Continuar execucao
+            </button>
+          </div>
+
+          <div class="loading-panel hidden" id="loading-panel" aria-live="polite">
+            <div class="loading-panel__visual">
+              <span class="pulse-dot"></span>
+              <span class="pulse-dot"></span>
+              <span class="pulse-dot"></span>
+            </div>
+            <div class="loading-panel__content">
+              <strong id="loading-title">Preparando sua execucao</strong>
+              <p id="loading-text">
+                Aguarde um instante. Estou organizando os passos e acompanhando o que
+                precisa ser feito.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel__header panel__header--spread">
+            <div>
+              <p class="panel__eyebrow">Acompanhamento</p>
+              <h2>Execucao atual</h2>
+              <p class="panel__subtext">
+                Status em tempo real, pedidos de confirmacao e historico recente.
+              </p>
+            </div>
+            <div class="metrics">
+              <div class="metric">
+                <strong id="count-running">0</strong>
+                <span>Em andamento</span>
+              </div>
+              <div class="metric">
+                <strong id="count-finished">0</strong>
+                <span>Concluidas</span>
+              </div>
+              <div class="metric">
+                <strong id="count-attention">0</strong>
+                <span>Atencao</span>
+              </div>
+            </div>
+          </div>
+
+          <article class="focus-card">
+            <div class="focus-card__header">
+              <div>
+                <strong id="active-run-title">Nenhuma execucao selecionada</strong>
+                <div class="run-card__meta" id="active-run-meta"></div>
+                <p id="active-run-message">
+                  Inicie um fluxo ou selecione uma execucao recente para acompanhar os detalhes.
+                </p>
+              </div>
+              <span class="status-chip" id="active-run-status">Inativo</span>
+            </div>
+
+            <div class="step-strip" id="step-strip">
+              <div class="step-chip" id="step-open">Abrir</div>
+              <div class="step-chip" id="step-login">Login</div>
+              <div class="step-chip" id="step-search">Pesquisa</div>
+              <div class="step-chip" id="step-finish">Resultado</div>
+            </div>
+
+            <div class="confirm-box hidden" id="confirmation-card">
+              <strong id="confirmation-title">Confirmacao necessaria</strong>
+              <p id="confirmation-message"></p>
+              <button class="button button--warning" id="confirmation-button" type="button">
+                Continuar execucao
+              </button>
+            </div>
+
+            <div class="detail-grid">
+              <div class="detail-card">
+                <strong>O que esta acontecendo</strong>
+                <p id="active-run-helper">
+                  Eventos do runner local aparecem aqui conforme a execucao avanca.
+                </p>
+              </div>
+              <div class="detail-card">
+                <strong>O que voce precisa fazer</strong>
+                <p id="active-run-guidance">
+                  Se o fluxo abrir o navegador do SEI, finalize login e 2FA antes de confirmar.
+                </p>
+              </div>
+            </div>
+
+            <div class="timeline" id="progress-timeline"></div>
+          </article>
+
+          <div class="panel__header">
+            <div>
+              <p class="panel__eyebrow">Historico</p>
+              <h2>Execucoes recentes</h2>
+              <p class="panel__subtext">Selecione uma execucao para ver detalhes e eventos.</p>
+            </div>
+          </div>
+
+          <div class="runs" id="execution-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

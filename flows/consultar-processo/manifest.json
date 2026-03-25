@@ -1,0 +1,17 @@
+{
+  "id": "consultar-processo",
+  "name": "Consultar processo",
+  "version": "0.1.0",
+  "description": "Consulta dados de um processo no SEI",
+  "author": "Equipe SFP",
+  "tags": ["sei", "consulta"],
+  "inputs": [
+    { "id": "processo", "label": "Numero do processo", "type": "text", "required": true },
+    { "id": "seiUrl", "label": "URL do SEI", "type": "text", "required": false },
+    { "id": "manualLogin", "label": "Login manual", "type": "boolean", "required": false }
+  ],
+  "exports": {
+    "allowFlowExport": true,
+    "allowRunExport": true
+  }
+}

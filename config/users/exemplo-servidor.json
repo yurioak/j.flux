@@ -1,0 +1,17 @@
+{
+  "id": "exemplo-servidor",
+  "displayName": "Servidor Exemplo",
+  "unit": "Gabinete",
+  "storage": {
+    "subdir": "exemplo-servidor"
+  },
+  "browser": {
+    "headless": false
+  },
+  "sei": {
+    "baseUrl": "https://sei.trf1.jus.br/sip/login.php?sigla_orgao_sistema=TRF1&sigla_sistema=SEI"
+  },
+  "ux": {
+    "recentFlows": ["consultar-processo"]
+  }
+}

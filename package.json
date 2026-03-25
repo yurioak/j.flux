@@ -1,0 +1,20 @@
+{
+  "name": "sei-flow-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Runner local leve para execucao de fluxos no SEI",
+  "main": "runner/cli.js",
+  "scripts": {
+    "start": "node runner/cli.js",
+    "web": "node web/server.js",
+    "list": "node runner/cli.js list",
+    "test:consultar": "node runner/cli.js run consultar-processo --input processo=00000.000000/0000-00 --dry-run",
+    "test:despacho": "node runner/cli.js run gerar-despacho --input processo=00000.000000/0000-00 --input unidade=Teste --input responsavel=Operador --input resumo=Fluxo%20de%20teste --dry-run"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "playwright-core": "^1.58.2"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "installed": [
+    {
+      "id": "consultar-processo",
+      "status": "available",
+      "headline": "Consulta automatizada de processo no SEI",
+      "summary": "Abre o SEI, permite login manual quando necessario e localiza o processo informado.",
+      "category": "Consulta"
+    },
+    {
+      "id": "gerar-despacho",
+      "status": "available",
+      "headline": "Geracao local de despacho padrao",
+      "summary": "Monta um despacho inicial com os dados informados e salva o documento na pasta do usuario.",
+      "category": "Documento"
+    }
+  ],
+  "inDevelopment": [
+    {
+      "id": "baixar-documento",
+      "status": "in-development",
+      "headline": "Download guiado de documento do SEI",
+      "summary": "Fluxo previsto para localizar e baixar documentos com evidencias de execucao.",
+      "category": "Documento"
+    },
+    {
+      "id": "anexar-documento",
+      "status": "in-development",
+      "headline": "Anexacao assistida ao processo",
+      "summary": "Fluxo em desenvolvimento para anexar arquivos ao processo com validacao humana antes do envio.",
+      "category": "Protocolo"
+    },
+    {
+      "id": "minuta-decisao",
+      "status": "in-development",
+      "headline": "Preparacao de minuta com dados do processo",
+      "summary": "Fluxo futuro para gerar minutas a partir de informacoes consolidadas do processo.",
+      "category": "Documento"
+    }
+  ]
+}

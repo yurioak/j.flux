@@ -1,0 +1,4 @@
+{
+  "extends": "./settings.base.json",
+  "notes": "Use este arquivo como referencia para criar configuracoes institucionais e perfis de usuario."
+}

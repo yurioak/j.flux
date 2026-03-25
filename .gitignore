@@ -1,0 +1,13 @@
+node_modules/
+
+storage/
+!storage/.gitkeep
+!storage/users/
+storage/users/**
+!storage/users/.gitkeep
+
+.browser-profile/
+*.log
+
+.DS_Store
+Thumbs.db

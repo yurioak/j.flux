@@ -1,0 +1,22 @@
+{
+  "id": "gerar-despacho",
+  "name": "Gerar despacho",
+  "version": "0.1.0",
+  "description": "Gera despacho a partir de um processo e parametros basicos",
+  "author": "Equipe SFP",
+  "tags": ["sei", "documento", "despacho"],
+  "inputs": [
+    { "id": "processo", "label": "Numero do processo", "type": "text", "required": true },
+    { "id": "unidade", "label": "Unidade", "type": "text", "required": true },
+    { "id": "responsavel", "label": "Responsavel", "type": "text", "required": true },
+    { "id": "resumo", "label": "Resumo", "type": "textarea", "required": false },
+    { "id": "tipoDocumento", "label": "Tipo de documento", "type": "text", "required": false },
+    { "id": "documentoModelo", "label": "Numero do documento modelo", "type": "text", "required": false },
+    { "id": "seiUrl", "label": "URL do SEI", "type": "text", "required": false },
+    { "id": "manualLogin", "label": "Login manual", "type": "boolean", "required": false }
+  ],
+  "exports": {
+    "allowFlowExport": true,
+    "allowRunExport": true
+  }
+}

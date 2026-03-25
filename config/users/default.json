@@ -1,0 +1,17 @@
+{
+  "id": "default",
+  "displayName": "Usuario Padrao",
+  "unit": "Secretaria Geral",
+  "storage": {
+    "subdir": "default"
+  },
+  "browser": {
+    "headless": false
+  },
+  "sei": {
+    "baseUrl": "https://sei.trf1.jus.br/sip/login.php?sigla_orgao_sistema=TRF1&sigla_sistema=SEI"
+  },
+  "ux": {
+    "recentFlows": ["consultar-processo", "gerar-despacho"]
+  }
+}
