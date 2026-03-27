@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background-color:#f4f6f9;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f9;padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#2d3748 0%,#4a5568 100%);padding:24px 32px;">
+              <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:600;">📢 Comunicado Interno</h1>
+              <p style="color:#cbd5e0;margin:4px 0 0 0;font-size:13px;">{{unidade}} — Justiça Federal do Tocantins</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;">
+              <p style="color:#2d3748;font-size:15px;line-height:1.6;margin:0 0 16px 0;">
+                Prezado(a) servidor(a),
+              </p>
+              <p style="color:#2d3748;font-size:15px;line-height:1.6;margin:0 0 24px 0;">
+                A unidade <strong>{{unidade}}</strong> comunica o seguinte:
+              </p>
+              <!-- Message Content -->
+              <div style="background-color:#f7fafc;border-radius:8px;padding:24px;margin:0 0 24px 0;border:1px solid #e2e8f0;">
+                <p style="color:#2d3748;font-size:15px;line-height:1.7;margin:0;white-space:pre-line;">{{mensagem}}</p>
+              </div>
+              {{#processo}}
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">
+                <tr>
+                  <td style="background-color:#fefcbf;border-left:4px solid #d69e2e;padding:12px 16px;border-radius:0 6px 6px 0;">
+                    <p style="color:#744210;font-size:13px;margin:0;">
+                      <strong>Processo relacionado:</strong> {{processo}}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+              {{/processo}}
+              <p style="color:#2d3748;font-size:15px;line-height:1.6;margin:0;">
+                Atenciosamente,<br>
+                <strong>{{responsavel}}</strong><br>
+                <span style="color:#718096;font-size:13px;">{{unidade}}</span>
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f7fafc;padding:16px 32px;border-top:1px solid #e2e8f0;">
+              <p style="color:#a0aec0;font-size:11px;margin:0;text-align:center;">
+                J.Flow RPA Platform • SJTO/TRF1 • {{data}}
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

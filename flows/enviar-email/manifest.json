@@ -1,0 +1,80 @@
+{
+  "id": "enviar-email",
+  "name": "Enviar E-mail",
+  "version": "1.0.0",
+  "category": "GESTÃO",
+  "description": "Envia e-mails institucionais com modelos profissionais via Office 365",
+  "author": "Equipe J.Flow",
+  "tags": ["email", "outlook", "office365", "notificacao", "comunicacao"],
+  "system": "OUTLOOK",
+  "context": "GESTÃO",
+  "inputs": [
+    {
+      "id": "destinatario",
+      "label": "Destinatário (e-mail)",
+      "type": "text",
+      "required": true,
+      "placeholder": "servidor@trf1.jus.br"
+    },
+    {
+      "id": "assunto",
+      "label": "Assunto do e-mail",
+      "type": "text",
+      "required": true,
+      "placeholder": "Assunto da comunicação"
+    },
+    {
+      "id": "remetente",
+      "label": "Enviar como",
+      "type": "select",
+      "options": [
+        { "value": "pessoal", "label": "Caixa Pessoal (padrão)" },
+        { "value": "compartilhada", "label": "Caixa Compartilhada (configurada no perfil)" }
+      ],
+      "required": false
+    },
+    {
+      "id": "caixaCompartilhada",
+      "label": "Endereço da caixa compartilhada",
+      "type": "text",
+      "required": false,
+      "placeholder": "cemad.to@trf1.jus.br"
+    },
+    {
+      "id": "template",
+      "label": "Modelo de e-mail",
+      "type": "select",
+      "options": [
+        { "value": "notificacao-processo", "label": "📋 Notificação de Processo" },
+        { "value": "comunicado-interno", "label": "📢 Comunicado Interno" },
+        { "value": "lembrete-prazo", "label": "⏰ Lembrete de Prazo" }
+      ],
+      "required": true
+    },
+    {
+      "id": "processo",
+      "label": "Número do processo (opcional)",
+      "type": "text",
+      "required": false,
+      "placeholder": "0000713-13.2026.4.01.8014"
+    },
+    {
+      "id": "mensagem",
+      "label": "Mensagem personalizada",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "Texto adicional para o corpo do e-mail..."
+    },
+    {
+      "id": "cc",
+      "label": "Cópia (CC)",
+      "type": "text",
+      "required": false,
+      "placeholder": "outro@trf1.jus.br"
+    }
+  ],
+  "exports": {
+    "allowFlowExport": true,
+    "allowRunExport": true
+  }
+}

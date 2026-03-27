@@ -13,6 +13,13 @@
       "headline": "Geracao local de despacho padrao",
       "summary": "Monta um despacho inicial com os dados informados e salva o documento na pasta do usuario.",
       "category": "Documento"
+    },
+    {
+      "id": "enviar-email",
+      "status": "available",
+      "headline": "Envio de e-mail institucional via Office 365",
+      "summary": "Envia e-mails com modelos profissionais (notificacao, comunicado, lembrete) via SMTP Office 365.",
+      "category": "Comunicação"
     }
   ],
   "inDevelopment": [

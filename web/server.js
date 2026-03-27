@@ -5,7 +5,7 @@ const { bootstrapRunner } = require("../runner/app");
 const { listUserProfiles, loadSettings, projectRoot } = require("../runner/config");
 const { runFlowById } = require("../runner/flow-runner");
 
-const host = "127.0.0.1";
+const host = "0.0.0.0";
 const port = Number(process.env.PORT || 4317);
 const webRoot = path.join(projectRoot, "web");
 const activeRuns = new Map();
@@ -432,6 +432,103 @@ async function handleApi(request, response, url) {
       runId,
       message: "Confirmacao registrada."
     });
+    return;
+  }
+
+  // ── System Status ───────────────────────────────────
+  if (request.method === "GET" && url.pathname === "/api/system-status") {
+    const userId = url.searchParams.get("userId") || "default";
+    const { checkLoginStatus } = require("../actions/sei/auth");
+    
+    // Para o SEI, fazemos uma checagem real se o robô consegue ver o sistema logado
+    // Nota: Em produção, isso pode ser otimizado para não abrir o browser toda hora,
+    // mas aqui ajuda a confirmar a sessão real.
+    const seiStatus = { authenticated: false, user: null };
+    try {
+      // Checagem simplificada: apenas verifica se o robô detecta login
+      // Para não pesar o servidor, o app.js chama isso a cada 5-10 segundos.
+      const loginCheck = await checkLoginStatus(); 
+      seiStatus.authenticated = loginCheck.loggedIn;
+      seiStatus.user = loginCheck.user;
+    } catch (e) {
+      seiStatus.authenticated = false;
+    }
+
+    // Para o Outlook, simplificaremos verificando se o arquivo de estado existe
+    const storagePath = path.join(projectRoot, "storage", "users", userId, "browser-state.json");
+    const outlookStatus = { authenticated: fs.existsSync(storagePath) };
+
+    sendJson(response, 200, {
+      sei: seiStatus,
+      outlook: outlookStatus,
+      timestamp: new Date().toISOString()
+    });
+    return;
+  }
+
+  // ── Email Settings ───────────────────────────────────
+  if (request.method === "GET" && url.pathname === "/api/email-settings") {
+    const userId = url.searchParams.get("userId") || "default";
+    const settings = loadSettings(userId);
+    const emailConfig = settings.email || {};
+
+    sendJson(response, 200, {
+      configured: Boolean(emailConfig.smtp?.user && emailConfig.smtp?.pass && emailConfig.smtp.pass !== "SUA-SENHA-DE-APP-AQUI"),
+      user: emailConfig.smtp?.user || "",
+      host: emailConfig.smtp?.host || "smtp.office365.com",
+      port: emailConfig.smtp?.port || 587,
+      defaultFrom: emailConfig.defaultFrom || "",
+      sharedMailboxes: emailConfig.sharedMailboxes || []
+    });
+    return;
+  }
+
+  if (request.method === "PUT" && url.pathname === "/api/email-settings") {
+    const body = await readRequestBody(request);
+    const userId = body.userId || "default";
+    const userProfilePath = path.join(projectRoot, "config", "users", `${userId}.json`);
+
+    if (!fs.existsSync(userProfilePath)) {
+      sendJson(response, 404, { error: "Perfil de usuario nao encontrado." });
+      return;
+    }
+
+    const profile = JSON.parse(fs.readFileSync(userProfilePath, "utf8"));
+    
+    profile.email = {
+      smtp: {
+        host: body.host || "smtp.office365.com",
+        port: Number(body.port) || 587,
+        secure: false,
+        user: body.user || "",
+        pass: body.pass || ""
+      },
+      defaultFrom: body.defaultFrom || body.user || "",
+      sharedMailboxes: body.sharedMailboxes || profile.email?.sharedMailboxes || []
+    };
+
+    fs.writeFileSync(userProfilePath, JSON.stringify(profile, null, 2), "utf8");
+
+    sendJson(response, 200, {
+      ok: true,
+      message: "Configuracao de e-mail salva com sucesso."
+    });
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/email-test") {
+    const body = await readRequestBody(request);
+    const { testConnection } = require("../actions/email");
+
+    const result = await testConnection({
+      host: body.host || "smtp.office365.com",
+      port: Number(body.port) || 587,
+      secure: false,
+      user: body.user || "",
+      pass: body.pass || ""
+    });
+
+    sendJson(response, 200, result);
     return;
   }
 

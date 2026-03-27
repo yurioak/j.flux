@@ -7,29 +7,8 @@ const {
 const { ask } = require("../../runner/prompt");
 const { saveScreenshot } = require("../../runner/screenshot");
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function reportProgress(context, message, extra = {}) {
-  if (typeof context.reportProgress === "function") {
-    context.reportProgress({
-      message,
-      ...extra
-    });
-  }
-}
-
-async function waitForConfirmation(context, payload) {
-  if (typeof context.waitForUserConfirmation === "function") {
-    const handled = await context.waitForUserConfirmation(payload);
-    if (handled !== null && handled !== undefined) {
-      return handled;
-    }
-  }
-
-  return ask(payload.question || "Pressione Enter para continuar...");
-}
+// Adaptação para Actions SEI
+const sei = require("../../actions/sei");
 
 async function findCandidateFrames(page) {
   const diagnostics = await collectInputCandidates(page);
@@ -69,7 +48,7 @@ async function trySubmitWithinFrame(page, frame, processNumber, selector, submit
     }
 
     await page.waitForLoadState("domcontentloaded", { timeout: 5000 }).catch(() => null);
-    await sleep(1200);
+    await sei.sleep(500);
 
     return {
       ok: true,
@@ -171,20 +150,7 @@ async function detectVisibleResults(page, processNumber) {
 }
 
 function printManualLoginInstructions(context, session) {
-  console.log("");
-  console.log("=== Consulta de processo no SEI ===");
-  console.log(`Usuario ativo: ${context.user.displayName} (${context.user.id})`);
-  console.log(`Unidade configurada: ${context.user.unit}`);
-  console.log(`Navegador: ${session.executablePath}`);
-  if (session.persistentSession && session.userDataDir) {
-    console.log(`Perfil persistente: ${session.userDataDir}`);
-  }
-  console.log("");
-  console.log("O navegador foi aberto para login manual.");
-  console.log("Se o SEI pedir autenticacao em duas etapas (2FA), conclua essa etapa no navegador.");
-  console.log("Se houver a opcao de confiar neste dispositivo, ela tende a funcionar melhor com o perfil persistente.");
-  console.log("Depois de terminar o login e aguardar a tela principal carregar, volte ao terminal.");
-  console.log("");
+  sei.printManualLoginInstructions(context, session);
 }
 
 async function runFlow(context) {
@@ -220,43 +186,47 @@ async function runFlow(context) {
   try {
     console.log("");
     console.log(`Abrindo o SEI para consultar o processo ${processNumber}...`);
-    reportProgress(context, `Abrindo o SEI para consultar o processo ${processNumber}.`, {
+    sei.reportProgress(context, `Abrindo o SEI para consultar o processo ${processNumber}.`, {
       phase: "opening-browser",
       status: "running"
     });
     const page = browser.pages()[0] || (await browser.newPage());
-    page.setDefaultNavigationTimeout(Number(context.settings.sei?.navigationTimeoutMs || 30000));
+    page.setDefaultNavigationTimeout(Number(context.settings.sei?.navigationTimeoutMs || 15000));
     await page.goto(seiUrl, { waitUntil: "domcontentloaded" });
     screenshotFile = await saveScreenshot(page, context, "sei-home");
 
     if (manualLogin) {
-      printManualLoginInstructions(context, session);
-      reportProgress(context, "Aguardando login manual e possivel 2FA no navegador.", {
-        phase: "manual-login",
-        status: "waiting-user",
-        requiresConfirmation: true,
-        confirmationLabel: "Ja conclui o login e o 2FA"
-      });
-      await waitForConfirmation(context, {
-        type: "manual-login",
-        title: "Concluir login no SEI",
-        message:
-          "Finalize o login no navegador aberto. Se houver 2FA, conclua essa etapa e aguarde a tela principal do SEI carregar.",
-        question: "Pressione Enter para continuar apos concluir o login...",
-        confirmLabel: "Ja conclui o login e o 2FA"
-      });
-      console.log("Login confirmado no terminal. Validando a pagina e iniciando a pesquisa...");
-      reportProgress(context, "Login confirmado. Validando a pagina antes da pesquisa.", {
-        phase: "manual-login-confirmed",
-        status: "running"
-      });
-      await page.waitForLoadState("domcontentloaded", { timeout: 10000 }).catch(() => null);
-      await sleep(1500);
+      sei.reportProgress(context, "Verificando se voce ja esta autenticado...", { phase: "check-login", status: "running" });
+      const sessionCheck = await sei.checkLoginStatus(page);
+
+      if (sessionCheck.isLogged) {
+        sei.reportProgress(context, `Sessão ativa detectada (${sessionCheck.source}). Pulando login manual.`, { 
+          phase: "manual-login", 
+          status: "finished" 
+        });
+      } else {
+        sei.printManualLoginInstructions(context, session);
+        sei.reportProgress(context, "Aguardando login manual e possivel 2FA no navegador.", {
+          phase: "manual-login",
+          status: "waiting-user",
+          requiresConfirmation: true,
+          confirmationLabel: "Ja conclui o login e o 2FA"
+        });
+        await sei.waitForConfirmation(context, {
+          type: "manual-login",
+          title: "Concluir login no SEI",
+          message:
+            "Finalize o login no navegador aberto. Se houver 2FA, conclua essa etapa e aguarde a tela principal do SEI carregar.",
+          question: "Pressione Enter para continuar apos concluir o login...",
+          confirmLabel: "Ja conclui o login e o 2FA"
+        });
+        await page.waitForLoadState("domcontentloaded", { timeout: 10000 }).catch(() => null);
+        await sei.sleep(500);
+      }
       screenshotFile = await saveScreenshot(page, context, "sei-after-login");
     }
 
-    console.log(`Tentando localizar o campo de pesquisa para o processo ${processNumber}...`);
-    reportProgress(context, `Tentando localizar o campo de pesquisa para o processo ${processNumber}.`, {
+    sei.reportProgress(context, `Tentando localizar o campo de pesquisa para o processo ${processNumber}.`, {
       phase: "searching",
       status: "running"
     });

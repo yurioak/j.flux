@@ -2,6 +2,7 @@
   "id": "consultar-processo",
   "name": "Consultar processo",
   "version": "0.1.0",
+  "category": "EXTRACAO",
   "description": "Consulta dados de um processo no SEI",
   "author": "Equipe SFP",
   "tags": ["sei", "consulta"],

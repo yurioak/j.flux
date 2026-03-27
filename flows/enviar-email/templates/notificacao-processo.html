@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background-color:#f4f6f9;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f9;padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1a365d 0%,#2b6cb0 100%);padding:24px 32px;">
+              <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:600;">📋 Notificação de Processo</h1>
+              <p style="color:#bee3f8;margin:4px 0 0 0;font-size:13px;">Justiça Federal — Seção Judiciária do Tocantins</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;">
+              <p style="color:#2d3748;font-size:15px;line-height:1.6;margin:0 0 16px 0;">
+                Prezado(a),
+              </p>
+              <p style="color:#2d3748;font-size:15px;line-height:1.6;margin:0 0 16px 0;">
+                Informamos que houve uma movimentação no processo abaixo:
+              </p>
+              <!-- Process Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
+                <tr>
+                  <td style="background-color:#ebf8ff;border-left:4px solid #3182ce;padding:16px 20px;border-radius:0 6px 6px 0;">
+                    <p style="color:#2b6cb0;font-size:13px;margin:0 0 4px 0;font-weight:600;text-transform:uppercase;">Processo</p>
+                    <p style="color:#1a365d;font-size:17px;margin:0;font-weight:700;font-family:monospace;">{{processo}}</p>
+                  </td>
+                </tr>
+              </table>
+              <!-- Details -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
+                <tr>
+                  <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;">
+                    <span style="color:#718096;font-size:13px;">Unidade</span><br>
+                    <span style="color:#2d3748;font-size:14px;font-weight:500;">{{unidade}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;">
+                    <span style="color:#718096;font-size:13px;">Responsável</span><br>
+                    <span style="color:#2d3748;font-size:14px;font-weight:500;">{{responsavel}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;">
+                    <span style="color:#718096;font-size:13px;">Data</span><br>
+                    <span style="color:#2d3748;font-size:14px;font-weight:500;">{{data}}</span>
+                  </td>
+                </tr>
+              </table>
+              <!-- Custom message -->
+              {{#mensagem}}
+              <div style="background-color:#f7fafc;border-radius:6px;padding:16px;margin:16px 0;">
+                <p style="color:#4a5568;font-size:14px;line-height:1.6;margin:0;">{{mensagem}}</p>
+              </div>
+              {{/mensagem}}
+              <p style="color:#718096;font-size:13px;margin:24px 0 0 0;">
+                Este e-mail foi enviado automaticamente pela plataforma <strong>J.Flow</strong>.
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f7fafc;padding:16px 32px;border-top:1px solid #e2e8f0;">
+              <p style="color:#a0aec0;font-size:11px;margin:0;text-align:center;">
+                J.Flow RPA Platform • SJTO/TRF1 • Gerado em {{data}}
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

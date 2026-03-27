@@ -3,227 +3,353 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SEI Flow Platform</title>
+    <title>J.FLOW RPA Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=15" />
   </head>
   <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">SEI Flow Platform</p>
-          <h1>Operacao local</h1>
-          <p class="topbar__text">
-            Executar fluxos reais, acompanhar progresso e confirmar etapas manuais
-            sem depender do terminal.
-          </p>
+    <div class="dashboard-shell">
+      
+      <!-- MAIN SIDEBAR -->
+      <aside class="main-sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          </div>
+          <div class="logo-text">
+            <strong>J.FLOW</strong>
+            <span>RPA PLATFORM</span>
+          </div>
         </div>
-        <div class="topbar__status">
-          <div class="status-chip" id="connection-badge">Conectando</div>
-          <div class="status-chip status-chip--subtle" id="selected-user-badge">Usuario</div>
+
+        <nav class="sidebar-nav">
+          <p class="nav-section">PRINCIPAL</p>
+          <a href="#" class="nav-item disabled-link">
+            <svg viewBox="0 0 24 24" fill="none" class="nav-icon"><path d="M4 4h6v6H4zm0 10h6v6H4zm10-10h6v6h-6zm0 10h6v6h-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            DASHBOARD
+            <span class="badge-soon">Em breve</span>
+          </a>
+          <a href="#" class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" class="nav-icon"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            NOVA SOLICITAÇÃO
+          </a>
+          <a href="#" class="nav-item disabled-link">
+            <svg viewBox="0 0 24 24" fill="none" class="nav-icon"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="13 2 13 9 20 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            EDITOR DE FLUXOS
+            <span class="badge-soon">Em breve</span>
+          </a>
+
+          <p class="nav-section">GESTÃO</p>
+          <a href="#" class="nav-item disabled-link">
+            <svg viewBox="0 0 24 24" fill="none" class="nav-icon"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            BIBLIOTECA
+            <span class="badge-soon">Em breve</span>
+          </a>
+          <a href="#" class="nav-item disabled-link">
+            <svg viewBox="0 0 24 24" fill="none" class="nav-icon"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            LOGS & AUDITORIA
+            <span class="badge-soon">Em breve</span>
+          </a>
+
+          <p class="nav-section">CONFIGURAÇÕES</p>
+          <a href="#" class="nav-item" id="nav-email-settings" onclick="openEmailSettings(); return false;">
+            <svg viewBox="0 0 24 24" fill="none" class="nav-icon"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            E-MAIL (SMTP)
+          </a>
+        </nav>
+
+        <div class="sidebar-status">
+          <div class="status-header">
+            <span>STATUS DO SISTEMA</span>
+            <div class="status-dot-active"></div>
+          </div>
+          <div class="status-item">
+            <span class="status-label">SEI Conectado</span>
+            <div class="status-indicator-box">
+              <strong id="status-sei" class="status-indicator offline">OFF</strong>
+            </div>
+          </div>
+          <div class="status-item">
+            <span class="status-label">PJe Conectado</span>
+            <div class="status-indicator-box">
+              <strong id="status-outlook" class="status-indicator offline">OFF</strong>
+            </div>
+          </div>
         </div>
-      </header>
+      </aside>
 
-      <main class="layout">
-        <section class="panel panel--form">
-          <div class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Nova execucao</p>
-              <h2>Executar fluxo</h2>
-              <p class="panel__subtext">
-                Preencha apenas os dados necessarios. Quando houver login manual, a
-                confirmacao aparece no painel ao lado.
-              </p>
-            </div>
+      <!-- MAIN CONTENT -->
+      <main class="main-wrapper">
+        
+        <!-- TOPBAR -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h1>NOVA SOLICITAÇÃO</h1>
           </div>
-
-          <div class="inline-message hidden" id="feedback-banner" role="status"></div>
-
-          <div class="comfort-card" id="comfort-card">
-            <strong id="comfort-title">Tudo pronto para começar</strong>
-            <p id="comfort-text">
-              Escolha o fluxo, preencha os campos e clique em executar. Eu vou te
-              mostrar cada etapa para que voce saiba exatamente o que esta acontecendo.
-            </p>
-          </div>
-
-          <form id="flow-form" novalidate>
-            <section class="form-section">
-              <div class="form-section__header">
-                <strong>Contexto</strong>
-                <span>Quem vai executar</span>
+          <div class="topbar-right">
+            <div class="lotacao-selector disabled-link" title="Múltiplas lotações chegarão em breve">
+              <span class="badge-gab">GAB</span>
+              <div class="lotacao-text">
+                <small>LOTAÇÃO ATIVA</small>
+                <span>GAB/PR</span>
               </div>
-
-              <label for="user-id">Usuario</label>
-              <select id="user-id" name="user-id"></select>
-
-              <label for="flow-type">Fluxo</label>
-              <select id="flow-type" name="flow-type"></select>
-            </section>
-
-            <section class="form-section">
-              <div class="form-section__header">
-                <strong>Dados do fluxo</strong>
-                <span>Campos variam conforme o tipo de execucao</span>
-              </div>
-
-              <div class="dynamic-fields" id="dynamic-fields"></div>
-            </section>
-
-            <div class="summary-card">
-              <div class="summary-card__header">
-                <strong id="preview-type">Fluxo</strong>
-                <span class="status-chip status-chip--subtle">Resumo</span>
-              </div>
-              <p id="preview-body"></p>
             </div>
-
-            <div class="callout">
-              <strong class="callout__title">Antes de executar</strong>
-              <p id="run-notice"></p>
-            </div>
-
-            <button class="button button--primary button--full" id="submit-button" type="submit">
-              Executar agora
+            <button class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-          </form>
+            <div class="user-profile">
+              <div class="user-info">
+                <strong id="selected-user-badge">Usuário</strong>
+                <span>ADMINISTRADOR</span>
+              </div>
+              <div class="avatar"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+          </div>
+        </header>
 
-          <section class="library-panel">
-            <div class="panel__header">
+        <!-- CONTENT BODY -->
+        <div class="content-body">
+          <header class="page-header">
+            <h2>Nova Solicitação de Automação</h2>
+            <p>Selecione o fluxo de trabalho para iniciar o processamento inteligente.</p>
+          </header>
+
+          <div class="catalogo-layout">
+            
+            <!-- INNER SIDEBAR (FILTERS) -->
+            <div class="catalogo-filters">
+              <div class="filter-group" id="filter-system-group">
+                <h3>SISTEMAS ALVO</h3>
+                <button class="filter-btn active" data-filter="TODOS"><div class="circle-icon globe"></div>TODOS</button>
+                <button class="filter-btn" data-filter="SEI"><div class="circle-icon sei"></div>SEI</button>
+                <button class="filter-btn" data-filter="PJE"><div class="circle-icon pje"></div>PJE</button>
+                <button class="filter-btn" data-filter="SAP"><div class="circle-icon sap"></div>SAP WEB</button>
+              </div>
+
+              <div class="filter-group" id="filter-context-group">
+                <h3>CONTEXTO</h3>
+                <button class="filter-btn active" data-filter="TODOS"><div class="circle-icon stack"></div>TODOS</button>
+                <button class="filter-btn" data-filter="INICIO"><div class="circle-icon plain"></div>INÍCIO</button>
+                <button class="filter-btn" data-filter="GESTÃO"><div class="circle-icon plain"></div>GESTÃO</button>
+                <button class="filter-btn" data-filter="MONITORAMENTO"><div class="circle-icon plain"></div>MONITORAMENTO</button>
+                <button class="filter-btn" data-filter="LOTE"><div class="circle-icon plain"></div>LOTE</button>
+                <button class="filter-btn" data-filter="DOCUMENTOS"><div class="circle-icon plain"></div>DOCUMENTOS</button>
+              </div>
+              <select id="user-id" name="user-id" class="hidden-select" style="display:none;"></select> <!-- Legacy hook -->
+              <input type="hidden" id="flow-type" /> <!-- Legacy hook -->
+            </div>
+
+            <!-- CARDS GRID -->
+            <div class="catalogo-main">
+              <div class="system-tabs">
+                <button class="sys-tab active" data-sys="TODOS">Todos os Fluxos</button>
+                <button class="sys-tab" data-sys="SEI">SEI Digital</button>
+                <button class="sys-tab" data-sys="PJE">PJe</button>
+                <button class="sys-tab" data-sys="OUTLOOK">Outlook</button>
+                <button class="sys-tab" data-sys="SAP WEB">SAP Web</button>
+              </div>
+
+              <div class="search-bar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <input type="search" placeholder="Pesquisar nos fluxos carregados..." />
+              </div>
+
+              <div class="cards-grid" id="flows-grid-container">
+                <!-- Javascript will inject .flow-card elements here -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SLIDE PANEL (Tabbed) -->
+        <div class="slide-panel hidden" id="execution-panel">
+          <div class="slide-panel__backdrop" id="panel-close-backdrop"></div>
+          <div class="slide-panel__content">
+
+            <!-- PANEL HEADER -->
+            <header class="slide-panel__header">
               <div>
-                <p class="panel__eyebrow">Biblioteca</p>
-                <h2>Fluxos</h2>
-                <p class="panel__subtext">
-                  Veja o que ja esta disponivel e o que ainda esta em desenvolvimento.
-                </p>
+                <div class="panel-flow-badge" id="panel-flow-badge">SEI</div>
+                <h3 id="panel-flow-title">Configurar Execução</h3>
+                <p id="preview-type">Fluxo Selecionado</p>
               </div>
-            </div>
+              <button class="icon-btn btn-close" id="btn-close-panel">✕</button>
+            </header>
 
-            <div class="library-group">
-              <div class="library-group__title">Disponiveis agora</div>
-              <div class="library-list" id="library-available"></div>
-            </div>
-
-            <div class="library-group">
-              <div class="library-group__title">Em desenvolvimento</div>
-              <div class="library-list" id="library-developing"></div>
-            </div>
-          </section>
-        </section>
-
-        <section class="panel panel--main">
-          <div class="stage-banner hidden" id="stage-banner">
-            <div class="stage-banner__content">
-              <strong id="stage-banner-title">Execucao em andamento</strong>
-              <p id="stage-banner-text"></p>
-            </div>
-            <button class="button button--warning hidden" id="stage-banner-button" type="button">
-              Continuar execucao
-            </button>
-          </div>
-
-          <div class="loading-panel hidden" id="loading-panel" aria-live="polite">
-            <div class="loading-panel__visual">
-              <span class="pulse-dot"></span>
-              <span class="pulse-dot"></span>
-              <span class="pulse-dot"></span>
-            </div>
-            <div class="loading-panel__content">
-              <strong id="loading-title">Preparando sua execucao</strong>
-              <p id="loading-text">
-                Aguarde um instante. Estou organizando os passos e acompanhando o que
-                precisa ser feito.
-              </p>
-            </div>
-          </div>
-
-          <div class="panel__header panel__header--spread">
-            <div>
-              <p class="panel__eyebrow">Acompanhamento</p>
-              <h2>Execucao atual</h2>
-              <p class="panel__subtext">
-                Status em tempo real, pedidos de confirmacao e historico recente.
-              </p>
-            </div>
-            <div class="metrics">
-              <div class="metric">
-                <strong id="count-running">0</strong>
-                <span>Em andamento</span>
-              </div>
-              <div class="metric">
-                <strong id="count-finished">0</strong>
-                <span>Concluidas</span>
-              </div>
-              <div class="metric">
-                <strong id="count-attention">0</strong>
-                <span>Atencao</span>
-              </div>
-            </div>
-          </div>
-
-          <article class="focus-card">
-            <div class="focus-card__header">
-              <div>
-                <strong id="active-run-title">Nenhuma execucao selecionada</strong>
-                <div class="run-card__meta" id="active-run-meta"></div>
-                <p id="active-run-message">
-                  Inicie um fluxo ou selecione uma execucao recente para acompanhar os detalhes.
-                </p>
-              </div>
-              <span class="status-chip" id="active-run-status">Inativo</span>
-            </div>
-
-            <div class="step-strip" id="step-strip">
-              <div class="step-chip" id="step-open">Abrir</div>
-              <div class="step-chip" id="step-login">Login</div>
-              <div class="step-chip" id="step-search">Pesquisa</div>
-              <div class="step-chip" id="step-finish">Resultado</div>
-            </div>
-
-            <div class="confirm-box hidden" id="confirmation-card">
-              <strong id="confirmation-title">Confirmacao necessaria</strong>
-              <p id="confirmation-message"></p>
-              <button class="button button--warning" id="confirmation-button" type="button">
-                Continuar execucao
+            <!-- TAB BAR -->
+            <div class="tab-bar" id="tab-bar">
+              <button class="tab-btn active" data-tab="config" onclick="switchTab('config')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Configurar
+              </button>
+              <button class="tab-btn" data-tab="execution" onclick="switchTab('execution')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Execução
+                <span class="tab-badge hidden" id="tab-execution-badge">●</span>
+              </button>
+              <button class="tab-btn" data-tab="history" onclick="switchTab('history')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Histórico
               </button>
             </div>
 
-            <div class="detail-grid">
-              <div class="detail-card">
-                <strong>O que esta acontecendo</strong>
-                <p id="active-run-helper">
-                  Eventos do runner local aparecem aqui conforme a execucao avanca.
-                </p>
-              </div>
-              <div class="detail-card">
-                <strong>O que voce precisa fazer</strong>
-                <p id="active-run-guidance">
-                  Se o fluxo abrir o navegador do SEI, finalize login e 2FA antes de confirmar.
-                </p>
+            <!-- TAB: CONFIGURAR -->
+            <div class="tab-content active" id="tab-config">
+              <div class="tab-inner">
+                <p class="summary-p" id="preview-body"></p>
+                <p class="notice-p" id="run-notice"></p>
+
+                <div class="inline-message hidden" id="feedback-banner" role="status"></div>
+
+                <form id="flow-form" novalidate>
+                  <div class="dynamic-fields" id="dynamic-fields"></div>
+                  <div class="form-footer">
+                    <button class="btn btn-primary" id="submit-button" type="submit">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      Executar agora
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
 
-            <div class="timeline" id="progress-timeline"></div>
-          </article>
+            <!-- TAB: EXECUÇÃO -->
+            <div class="tab-content" id="tab-execution">
+              <div class="tab-inner">
+                <div class="stage-banner hidden" id="stage-banner">
+                  <div class="stage-banner__content">
+                    <strong id="stage-banner-title">Execucao em andamento</strong>
+                    <p id="stage-banner-text"></p>
+                  </div>
+                  <button class="btn btn-warning hidden" id="stage-banner-button" type="button">
+                    Continuar execucao
+                  </button>
+                </div>
 
-          <div class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Historico</p>
-              <h2>Execucoes recentes</h2>
-              <p class="panel__subtext">Selecione uma execucao para ver detalhes e eventos.</p>
+                <div class="loading-panel hidden" id="loading-panel" aria-live="polite">
+                  <div class="loading-panel__visual">
+                    <span class="pulse-dot"></span><span class="pulse-dot"></span><span class="pulse-dot"></span>
+                  </div>
+                  <div class="loading-panel__content">
+                    <strong id="loading-title">Preparando sua execução</strong>
+                    <p id="loading-text"></p>
+                  </div>
+                </div>
+
+                <article class="focus-card">
+                  <div class="focus-card__header">
+                    <div>
+                      <strong id="active-run-title">Nenhuma execução atual</strong>
+                      <div class="run-meta-line" id="active-run-meta"></div>
+                      <p class="run-message" id="active-run-message"></p>
+                    </div>
+                    <span class="status-chip" id="active-run-status">Inativo</span>
+                  </div>
+
+                  <div class="step-strip" id="step-strip">
+                    <div class="step-chip" id="step-open">Abrir</div>
+                    <div class="step-chip" id="step-login">Login</div>
+                    <div class="step-chip" id="step-search">Pesquisa</div>
+                    <div class="step-chip" id="step-finish">Resultado</div>
+                  </div>
+
+                  <div class="confirm-box hidden" id="confirmation-card">
+                    <strong id="confirmation-title">Confirmacao necessaria</strong>
+                    <p id="confirmation-message"></p>
+                    <button class="btn btn-warning" id="confirmation-button" type="button">
+                      Continuar execucao
+                    </button>
+                  </div>
+
+                  <div class="hidden">
+                    <span id="active-run-helper"></span>
+                    <span id="active-run-guidance"></span>
+                  </div>
+
+                  <h4 class="log-title">Log de Execução</h4>
+                  <div class="timeline" id="progress-timeline">
+                    <div class="log-empty">Nenhum evento ainda. Execute um fluxo para ver o log em tempo real.</div>
+                  </div>
+                </article>
+
+                <div class="comfort-card hidden" id="comfort-card">
+                  <strong id="comfort-title"></strong>
+                  <p id="comfort-text"></p>
+                </div>
+              </div>
             </div>
+
+            <!-- TAB: HISTÓRICO -->
+            <div class="tab-content" id="tab-history">
+              <div class="tab-inner">
+                <h4 class="log-title">Execuções Recentes</h4>
+                <p class="text-muted-sm">Selecione uma execução para ver detalhes e acompanhar eventos.</p>
+                <div class="runs-list" id="execution-list"></div>
+              </div>
+            </div>
+
           </div>
+        </div>
 
-          <div class="runs" id="execution-list"></div>
-        </section>
+        <!-- HIDDEN LEGACY DOM CONTAINERS REQUIRED BY APP.JS -->
+        <div style="display:none;" id="legacy-hooks">
+           <div id="library-available"></div>
+           <div id="library-developing"></div>
+           <strong id="count-running">0</strong>
+           <strong id="count-finished">0</strong>
+           <strong id="count-attention">0</strong>
+        </div>
+
       </main>
     </div>
 
-    <script src="./app.js"></script>
+    <!-- EMAIL SETTINGS MODAL -->
+    <div class="modal-overlay hidden" id="email-settings-modal">
+      <div class="modal-card">
+        <header class="modal-header">
+          <h3>✉️ Configuração de E-mail</h3>
+          <button class="icon-btn btn-close" onclick="closeEmailSettings()">✕</button>
+        </header>
+        <div class="modal-body">
+          <p class="modal-desc">Configure sua conta do Office 365 para enviar e-mails automáticos pela plataforma.</p>
+          
+          <div class="modal-status" id="email-status"></div>
+
+          <div class="modal-field">
+            <label for="smtp-user">Seu e-mail institucional</label>
+            <input type="email" id="smtp-user" placeholder="servidor@trf1.jus.br" autocomplete="email" />
+          </div>
+          <div class="modal-field">
+            <label for="smtp-pass">Senha (ou Senha de App se tiver MFA)</label>
+            <input type="password" id="smtp-pass" placeholder="Sua senha do e-mail" autocomplete="current-password" />
+          </div>
+          <div class="modal-field">
+            <label for="smtp-host">Servidor SMTP</label>
+            <input type="text" id="smtp-host" value="smtp.office365.com" />
+          </div>
+          <div class="modal-field">
+            <label for="smtp-port">Porta</label>
+            <input type="number" id="smtp-port" value="587" />
+          </div>
+          <div class="modal-hint">
+            <strong>💡 Dica:</strong> Use sua senha normal do e-mail. Se tiver autenticação em dois fatores (MFA), gere uma "Senha de Aplicativo" em 
+            <a href="https://myaccount.microsoft.com/security-info" target="_blank">myaccount.microsoft.com</a>.
+          </div>
+        </div>
+        <footer class="modal-footer">
+          <button class="btn btn-outline" id="btn-test-email" onclick="testEmailConnection()">🔌 Testar Conexão</button>
+          <button class="btn btn-primary" id="btn-save-email" onclick="saveEmailSettings()">💾 Salvar</button>
+        </footer>
+      </div>
+    </div>
+
+    <script src="./app.js?v=5"></script>
   </body>
 </html>

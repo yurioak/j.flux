@@ -1,16 +1,34 @@
 {
   "id": "gerar-despacho",
-  "name": "Gerar despacho",
-  "version": "0.1.0",
-  "description": "Gera despacho a partir de um processo e parametros basicos",
+  "name": "Gerar Documento (Dinâmico)",
+  "version": "0.2.0",
+  "category": "DOCUMENTOS",
+  "description": "Gera arquivos baseando-se em Templates MD padronizados",
   "author": "Equipe SFP",
-  "tags": ["sei", "documento", "despacho"],
+  "tags": ["sei", "documento", "despacho", "oficio"],
   "inputs": [
     { "id": "processo", "label": "Numero do processo", "type": "text", "required": true },
     { "id": "unidade", "label": "Unidade", "type": "text", "required": true },
     { "id": "responsavel", "label": "Responsavel", "type": "text", "required": true },
-    { "id": "resumo", "label": "Resumo", "type": "textarea", "required": false },
-    { "id": "tipoDocumento", "label": "Tipo de documento", "type": "text", "required": false },
+    { 
+      "id": "tipoDocumento", 
+      "label": "Tipo de documento no SEI", 
+      "type": "select", 
+      "options": ["Despacho", "Ofício", "Certidão", "Termo de Encerramento", "Ata", "Relatório"], 
+      "required": true 
+    },
+    { 
+      "id": "template", 
+      "label": "Template/Gabarito a ser usado", 
+      "type": "select", 
+      "options": [
+        { "value": "padrao", "label": "Padrão JFlow (Universal)" },
+        { "value": "oficio-externo", "label": "Ofício Externo" },
+        { "value": "certidao-simples", "label": "Certidão Simples" }
+      ], 
+      "required": false 
+    },
+    { "id": "resumo", "label": "Resumo Adicional (Injetado via MD)", "type": "textarea", "required": false },
     { "id": "documentoModelo", "label": "Numero do documento modelo", "type": "text", "required": false },
     { "id": "seiUrl", "label": "URL do SEI", "type": "text", "required": false },
     { "id": "manualLogin", "label": "Login manual", "type": "boolean", "required": false }

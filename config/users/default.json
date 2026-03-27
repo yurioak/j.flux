@@ -11,7 +11,27 @@
   "sei": {
     "baseUrl": "https://sei.trf1.jus.br/sip/login.php?sigla_orgao_sistema=TRF1&sigla_sistema=SEI"
   },
+  "email": {
+    "smtp": {
+      "host": "smtp.office365.com",
+      "port": 587,
+      "secure": false,
+      "user": "yuri.carvalho@trf1.jus.br",
+      "pass": "SJcc@2025Palmas"
+    },
+    "defaultFrom": "yuri.carvalho@trf1.jus.br",
+    "sharedMailboxes": [
+      {
+        "label": "CEMAD-TO",
+        "address": "cemad.to@trf1.jus.br"
+      }
+    ]
+  },
   "ux": {
-    "recentFlows": ["consultar-processo", "gerar-despacho"]
+    "recentFlows": [
+      "consultar-processo",
+      "gerar-despacho",
+      "enviar-email"
+    ]
   }
 }

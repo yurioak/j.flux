@@ -3,6 +3,7 @@ const path = require("path");
 const { loadSettings, projectRoot } = require("./config");
 const { findFlowById } = require("./flow-loader");
 const { ensureStorage, writeRunLog, writeRunOutput } = require("./storage");
+const { logger } = require("./logger");
 
 function buildRunId() {
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -113,7 +114,20 @@ async function runFlowById(flowId, executionOptions = {}) {
   }
 
   const startedAt = new Date().toISOString();
-  const result = await flowModule.runFlow(context);
+  let result;
+  let errorOccurred = false;
+
+  try {
+    result = await flowModule.runFlow(context);
+  } catch (err) {
+    logger.error(`Erro fatal no fluxo ${flowId}: ${err.message}`, { stack: err.stack });
+    result = {
+      status: "error",
+      message: `Erro inesperado: ${err.message}`
+    };
+    errorOccurred = true;
+  }
+
   const finishedAt = new Date().toISOString();
 
   const finalResult = {
@@ -131,13 +145,15 @@ async function runFlowById(flowId, executionOptions = {}) {
     user: context.user
   };
 
+  // Garante durabilidade: Sempre escreve o log, mesmo em erro
   const logFile = writeRunLog(context, finalResult);
   const outputFile = writeRunOutput(context, finalResult);
 
   return {
     ...finalResult,
     logFile,
-    outputFile
+    outputFile,
+    error: errorOccurred ? finalResult.message : null
   };
 }
 

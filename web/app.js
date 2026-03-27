@@ -11,7 +11,9 @@ const state = {
   activeRun: null,
   pollTimer: null,
   submitting: false,
-  autoFocusRunId: null
+  autoFocusRunId: null,
+  filterSystem: "TODOS",
+  filterContext: "TODOS"
 };
 
 const userSelect = document.querySelector("#user-id");
@@ -90,8 +92,21 @@ function formatTimestamp(value) {
   }).format(new Date(value));
 }
 
+// Helper para atualizar o DOM com seguranca (evita erros se o ID nao existir)
+function safeUpdate(selector, property, value) {
+  const el = typeof selector === "string" ? document.querySelector(selector) : selector;
+  if (el) {
+    el[property] = value;
+    return true;
+  }
+  return false;
+}
+
+function safeSetText(selector, text) { return safeUpdate(selector, "textContent", text); }
+function safeSetHTML(selector, html) { return safeUpdate(selector, "innerHTML", html); }
+
 function getSelectedFlow() {
-  return state.flows.find((flow) => flow.id === flowType.value) || state.flows[0] || null;
+  return state.flows.find((flow) => flow.id === flowType?.value) || state.flows[0] || null;
 }
 
 function getSelectedUser() {
@@ -99,23 +114,28 @@ function getSelectedUser() {
 }
 
 function setConnectionBadge(label, status = "") {
-  connectionBadge.textContent = label;
-  connectionBadge.dataset.status = status;
+  safeSetText("#connection-badge", label);
+  const el = document.querySelector("#connection-badge");
+  if (el) el.dataset.status = status;
 }
 
 function setComfortState(title, text) {
-  comfortTitle.textContent = title;
-  comfortText.textContent = text;
+  safeSetText("#comfort-title", title);
+  safeSetText("#comfort-text", text);
 }
 
 function showBanner(message, type = "success") {
-  feedbackBanner.textContent = message;
-  feedbackBanner.className = `inline-message inline-message--${type}`;
+  safeSetText("#feedback-banner", message);
+  const el = document.querySelector("#feedback-banner");
+  if (el) el.className = `inline-message inline-message--${type}`;
 }
 
 function hideBanner() {
-  feedbackBanner.className = "inline-message hidden";
-  feedbackBanner.textContent = "";
+  const el = document.querySelector("#feedback-banner");
+  if (el) {
+    el.className = "inline-message hidden";
+    el.textContent = "";
+  }
 }
 
 function clearFieldErrors() {
@@ -155,6 +175,16 @@ function createField(input) {
       <option value="true">Sim</option>
       <option value="false">Nao</option>
     `;
+  } else if (input.type === "select") {
+    field = document.createElement("select");
+    if (input.options && Array.isArray(input.options)) {
+      input.options.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt.value || opt;
+        option.textContent = opt.label || opt;
+        field.appendChild(option);
+      });
+    }
   } else {
     field = document.createElement("input");
     field.type = "text";
@@ -172,27 +202,208 @@ function createField(input) {
 }
 
 function renderUsers() {
-  userSelect.innerHTML = state.users
-    .map(
-      (user) =>
-        `<option value="${user.id}">${escapeHtml(user.displayName)} (${escapeHtml(
-          user.id
-        )})</option>`
-    )
-    .join("");
-  userSelect.value = state.selectedUserId;
+  if (userSelect) {
+    userSelect.innerHTML = state.users
+      .map(
+        (user) =>
+          `<option value="${user.id}">${escapeHtml(user.displayName)} (${escapeHtml(
+            user.id
+          )})</option>`
+      )
+      .join("");
+    userSelect.value = state.selectedUserId;
+  }
 
   const selectedUser = getSelectedUser();
-  selectedUserBadge.textContent = selectedUser
+  safeSetText("#selected-user-badge", selectedUser
     ? `${selectedUser.displayName} | ${selectedUser.unit}`
-    : "Usuario";
+    : "Usuario");
 }
 
 function renderFlows() {
-  flowType.innerHTML = state.flows
-    .map((flow) => `<option value="${flow.id}">${escapeHtml(flow.name)}</option>`)
-    .join("");
+  const container = document.getElementById("flows-grid-container");
+  if (!container) return;
+  
+  try {
+    // Filtrar fluxos por Sistema e Contexto
+    const filteredFlows = state.flows.filter(flow => {
+      // Filtro de Sistema
+      if (state.filterSystem !== "TODOS") {
+        let sysBadge = "SEI";
+        const nameUpper = (flow.name || "").toUpperCase();
+        if (nameUpper.includes("PJE")) sysBadge = "PJE";
+        else if (nameUpper.includes("SAP")) sysBadge = "SAP WEB";
+        else if (nameUpper.includes("E-MAIL")) sysBadge = "OUTLOOK";
+        
+        if (sysBadge !== state.filterSystem) return false;
+      }
+
+      // Filtro de Contexto (Categoria)
+      if (state.filterContext !== "TODOS") {
+        const cat = (flow.category || "PROCESSUAL").toUpperCase();
+        if (cat !== state.filterContext) return false;
+      }
+
+      return true;
+    });
+
+    // Agrupar fluxos por categoria
+    const groups = {};
+    filteredFlows.forEach(flow => {
+      const cat = (flow.category || "PROCESSUAL").toUpperCase();
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(flow);
+    });
+
+    let html = "";
+    
+    // Ordenar categorias (opcional)
+    const sortedCategories = Object.keys(groups).sort();
+
+    if (filteredFlows.length === 0) {
+      container.innerHTML = `<div class="log-empty" style="grid-column: 1/-1; padding: 60px;">Nenhum fluxo encontrado para os filtros selecionados.</div>`;
+      return;
+    }
+
+    sortedCategories.forEach(cat => {
+      // Adicionar header da categoria
+      html += `<div class="category-header">${cat}</div>`;
+
+      groups[cat].forEach(flow => {
+        let sysBadge = "SEI";
+        const nameUpper = (flow.name || "").toUpperCase();
+        if (nameUpper.includes("PJE")) sysBadge = "PJE";
+        else if (nameUpper.includes("SAP")) sysBadge = "SAP WEB";
+        else if (nameUpper.includes("E-MAIL")) sysBadge = "OUTLOOK";
+        html += `
+          <div class="flow-card" onclick="openFlowPanel('${escapeHtml(flow.id)}')">
+            <div class="flow-card__badge" data-sys="${sysBadge}">${sysBadge}</div>
+            <div class="flow-card__top">
+              <div class="flow-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              </div>
+              <div class="flow-card__info">
+                <div class="flow-card__title">${escapeHtml(flow.name)}</div>
+                <div class="flow-card__category">${cat}</div>
+              </div>
+            </div>
+            <p>${escapeHtml(flow.description || "Inicie este fluxo para realizar o processamento inteligente no ambiente alvo.")}</p>
+            <div class="flow-card__actions">
+              <div class="flow-card__tags">INDIVIDUAL &nbsp; <span style="color:#f59e0b">✦ STITCHED</span></div>
+              <div class="flow-card__exec">EXECUTAR ↗</div>
+            </div>
+          </div>
+        `;
+      });
+    });
+
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<div style="grid-column: 1/-1; color: red;">Error renderFlows: ${err.message}<pre>${err.stack}</pre></div>`;
+    console.error(err);
+  }
 }
+
+function openFlowPanel(flowId) {
+  document.getElementById("flow-type").value = flowId;
+  const panel = document.getElementById("execution-panel");
+  const flow = state.flows.find((f) => f.id === flowId);
+
+  // Reset panel state
+  hideBanner();
+  clearFieldErrors();
+  renderFields();
+  renderPreview();
+
+  // Update panel header
+  const titleEl = document.getElementById("panel-flow-title");
+  const badgeEl = document.getElementById("panel-flow-badge");
+  if (titleEl && flow) titleEl.textContent = flow.name;
+  if (badgeEl && flow) {
+    const nameUpper = (flow.name || "").toUpperCase();
+    if (nameUpper.includes("PJE")) {
+      badgeEl.textContent = "PJE";
+      badgeEl.style.background = "#dc2626";
+    } else if (nameUpper.includes("E-MAIL")) {
+      badgeEl.textContent = "OUTLOOK";
+      badgeEl.style.background = "#0078d4"; // Office 365 Blue
+    } else {
+      badgeEl.textContent = "SEI";
+      badgeEl.style.background = "#2563eb";
+    }
+  }
+
+  // Reset to config tab
+  switchTab("config");
+
+  panel.classList.remove("hidden");
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.tab === tabName);
+  });
+  document.querySelectorAll(".tab-content").forEach((content) => {
+    content.classList.toggle("active", content.id === "tab-" + tabName);
+  });
+
+  // If switching to history, render runs
+  if (tabName === "history") {
+    renderRuns();
+  }
+}
+
+function filterFlowCards(query) {
+  const cards = document.querySelectorAll(".flow-card");
+  const q = (query || "").toLowerCase().trim();
+  cards.forEach((card) => {
+    const title = (card.querySelector(".flow-card__title")?.textContent || "").toLowerCase();
+    const desc = (card.querySelector("p")?.textContent || "").toLowerCase();
+    card.style.display = (!q || title.includes(q) || desc.includes(q)) ? "" : "none";
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.getElementById("btn-close-panel");
+  const backdrop = document.getElementById("panel-close-backdrop");
+  const panel = document.getElementById("execution-panel");
+  const hidePanel = () => panel.classList.add("hidden");
+  if (closeBtn) closeBtn.onclick = hidePanel;
+  if (backdrop) backdrop.onclick = hidePanel;
+
+  // Search bar
+  const searchInput = document.querySelector(".search-bar input");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => filterFlowCards(e.target.value));
+  }
+
+  // System Tabs Navigation
+  document.querySelectorAll(".sys-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".sys-tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      state.filterSystem = tab.dataset.sys;
+      renderFlows();
+    });
+  });
+
+  // Context Sidebar Filters
+  document.querySelectorAll(".catalogo-filters .filter-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const parent = btn.parentElement;
+      parent.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      
+      const filterGroup = parent.id;
+      if (filterGroup === "filter-system-group") {
+        state.filterSystem = btn.dataset.filter;
+      } else {
+        state.filterContext = btn.dataset.filter;
+      }
+      renderFlows();
+    });
+  });
+});
 
 function renderFields() {
   const flow = getSelectedFlow();
@@ -317,7 +528,9 @@ function mapRunStatus(run) {
       "search-submitted",
       "dry-run",
       "pending-implementation",
-      "document-generated"
+      "document-generated",
+      "document-created-in-sei",
+      "email-sent"
     ].includes(
       run.status
     )
@@ -325,7 +538,7 @@ function mapRunStatus(run) {
     return "concluido";
   }
 
-  if (String(run.status || "").includes("error") || run.status === "search-not-found") {
+  if (String(run.status || "").includes("error") || run.status === "search-not-found" || run.status === "document-fill-failed" || run.status === "process-restricted" || run.status === "include-document-not-found" || run.status === "process-open-failed" || run.status === "email-failed") {
     return "erro";
   }
 
@@ -405,6 +618,14 @@ function getFriendlyMessage(run) {
 
   if (run.status === "error") {
     return "Algo impediu a continuidade da execucao. Veja os detalhes e tente novamente.";
+  }
+
+  if (run.status === "email-sent") {
+    return "E-mail enviado com sucesso. Verifique se a cópia chegou, se aplicável.";
+  }
+
+  if (run.status === "email-failed") {
+    return "Falha ao enviar e-mail. Verifique suas credenciais de configuração e a conexão com o servidor.";
   }
 
   return run.message || "Execucao em acompanhamento.";
@@ -533,6 +754,7 @@ function renderRuns() {
       state.autoFocusRunId = null;
       await loadRunDetails();
       renderRuns();
+      switchTab("execution");
     });
   });
 
@@ -785,10 +1007,16 @@ async function handleSubmit(event) {
     state.activeRunId = payload.runId;
     state.autoFocusRunId = payload.runId;
     await refreshAll();
-    showBanner("Execucao iniciada. Acompanhe o progresso no painel ao lado.", "success");
+
+    // Auto-switch to execution tab
+    switchTab("execution");
+    const badge = document.getElementById("tab-execution-badge");
+    if (badge) badge.classList.remove("hidden");
+
+    showBanner("Execucao iniciada. Acompanhe o progresso na aba Execucao.", "success");
     setComfortState(
       "Execucao iniciada",
-      "Eu ja comecei a rodada e vou te orientar pelo painel da direita. Se algo depender de voce, vou avisar com destaque."
+      "Eu ja comecei a rodada e vou te orientar por aqui. Se algo depender de voce, vou avisar com destaque."
     );
     setConnectionBadge("Conectado", "concluido");
   } catch (error) {
@@ -821,12 +1049,42 @@ async function handleContinue() {
   }
 }
 
+function setupFilters() {
+  const sysGroup = document.getElementById("filter-system-group");
+  const ctxGroup = document.getElementById("filter-context-group");
+
+  if (sysGroup) {
+    const buttons = sysGroup.querySelectorAll(".filter-btn");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.filterSystem = btn.dataset.filter;
+        renderFlows();
+      });
+    });
+  }
+
+  if (ctxGroup) {
+    const buttons = ctxGroup.querySelectorAll(".filter-btn");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.filterContext = btn.dataset.filter;
+        renderFlows();
+      });
+    });
+  }
+}
+
 async function initialize() {
   try {
     setConnectionBadge("Conectando", "executando");
     await loadUsers();
     await loadFlows();
     await refreshAll();
+    setupFilters();
     setConnectionBadge("Conectado", "concluido");
   } catch (error) {
     setConnectionBadge("Falha", "erro");
@@ -873,7 +1131,178 @@ stageBannerButton.addEventListener("click", () => {
   });
 });
 
+async function refreshStatus() {
+  const seiEl = document.getElementById("status-sei");
+  const outlookEl = document.getElementById("status-outlook");
+
+  if (!seiEl || !outlookEl) return;
+
+  try {
+    const data = await api("/api/system-status");
+    
+    // Atualiza SEI
+    if (data.sei?.authenticated) {
+      seiEl.className = "status-indicator online";
+      seiEl.textContent = "ON";
+      seiEl.title = `Logado como ${data.sei.user}`;
+    } else {
+      seiEl.className = "status-indicator offline";
+      seiEl.textContent = "OFF";
+      seiEl.title = "Sessão expirada ou não autenticada";
+    }
+
+    // Atualiza Outlook
+    if (data.outlook?.authenticated) {
+      outlookEl.className = "status-indicator online";
+      outlookEl.textContent = "ON";
+    } else {
+      outlookEl.className = "status-indicator offline";
+      outlookEl.textContent = "OFF";
+    }
+  } catch (e) {
+    // Silently fail or show neutral
+    seiEl.textContent = "OFFLINE";
+    outlookEl.textContent = "OFFLINE";
+  }
+}
+
+async function initialize() {
+  try {
+    const [usersData, flowsData] = await Promise.all([
+      api("/api/users"),
+      api("/api/flows")
+    ]);
+
+    state.users = usersData.users || [];
+    state.flows = flowsData.flows || [];
+    state.library = flowsData.library || { installed: [], inDevelopment: [] };
+
+    renderUsers();
+    renderFlows();
+    renderLibrary();
+    refreshStatus(); // Initial status check
+  } catch (error) {
+    showBanner("Falha ao inicializar dados do servidor.", "error");
+  }
+}
+
 initialize();
 state.pollTimer = window.setInterval(() => {
   refreshAll().catch(() => null);
-}, 2500);
+  refreshStatus().catch(() => null);
+}, 5000);
+
+// ── Email Settings Modal ─────────────────────────────
+async function openEmailSettings() {
+  const modal = document.getElementById("email-settings-modal");
+  const statusEl = document.getElementById("email-status");
+  statusEl.className = "modal-status";
+  statusEl.textContent = "";
+
+  try {
+    const data = await api(`/api/email-settings?userId=${state.selectedUserId}`);
+    document.getElementById("smtp-user").value = data.user || "";
+    document.getElementById("smtp-host").value = data.host || "smtp.office365.com";
+    document.getElementById("smtp-port").value = data.port || 587;
+
+    if (data.configured) {
+      statusEl.className = "modal-status success";
+      statusEl.textContent = "✅ E-mail já configurado: " + data.user;
+    } else {
+      statusEl.className = "modal-status info";
+      statusEl.textContent = "📧 Configure seu e-mail para habilitar o envio automático.";
+    }
+  } catch (e) {
+    statusEl.className = "modal-status info";
+    statusEl.textContent = "📧 Primeira configuração. Preencha os dados abaixo.";
+  }
+
+  document.getElementById("smtp-pass").value = "";
+  modal.classList.remove("hidden");
+}
+
+function closeEmailSettings() {
+  document.getElementById("email-settings-modal").classList.add("hidden");
+}
+
+async function testEmailConnection() {
+  const statusEl = document.getElementById("email-status");
+  const btn = document.getElementById("btn-test-email");
+  const user = document.getElementById("smtp-user").value.trim();
+  const pass = document.getElementById("smtp-pass").value;
+  const host = document.getElementById("smtp-host").value.trim();
+  const port = document.getElementById("smtp-port").value;
+
+  if (!user || !pass) {
+    statusEl.className = "modal-status error";
+    statusEl.textContent = "❌ Preencha o e-mail e a senha antes de testar.";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Testando...";
+  statusEl.className = "modal-status info";
+  statusEl.textContent = "🔄 Conectando ao servidor SMTP...";
+
+  try {
+    const result = await api("/api/email-test", {
+      method: "POST",
+      body: JSON.stringify({ user, pass, host, port: Number(port) })
+    });
+
+    if (result.ok) {
+      statusEl.className = "modal-status success";
+      statusEl.textContent = "✅ Conexão bem-sucedida! Seu e-mail está pronto para envio.";
+    } else {
+      statusEl.className = "modal-status error";
+      statusEl.textContent = "❌ Falha na conexão: " + (result.error || "Erro desconhecido");
+    }
+  } catch (e) {
+    statusEl.className = "modal-status error";
+    statusEl.textContent = "❌ Erro ao testar: " + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔌 Testar Conexão";
+  }
+}
+
+async function saveEmailSettings() {
+  const statusEl = document.getElementById("email-status");
+  const user = document.getElementById("smtp-user").value.trim();
+  const pass = document.getElementById("smtp-pass").value;
+  const host = document.getElementById("smtp-host").value.trim();
+  const port = document.getElementById("smtp-port").value;
+
+  if (!user) {
+    statusEl.className = "modal-status error";
+    statusEl.textContent = "❌ Informe seu e-mail institucional.";
+    return;
+  }
+
+  try {
+    const result = await api("/api/email-settings", {
+      method: "PUT",
+      body: JSON.stringify({
+        userId: state.selectedUserId,
+        user,
+        pass: pass || undefined,
+        host,
+        port: Number(port),
+        defaultFrom: user
+      })
+    });
+
+    if (result.ok) {
+      statusEl.className = "modal-status success";
+      statusEl.textContent = "✅ Configuração salva com sucesso! Você já pode enviar e-mails.";
+    }
+  } catch (e) {
+    statusEl.className = "modal-status error";
+    statusEl.textContent = "❌ Erro ao salvar: " + e.message;
+  }
+}
+
+// Fechar modal ao clicar fora
+document.getElementById("email-settings-modal")?.addEventListener("click", (e) => {
+  if (e.target.classList.contains("modal-overlay")) closeEmailSettings();
+});
